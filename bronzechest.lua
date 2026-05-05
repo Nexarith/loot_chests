@@ -167,32 +167,21 @@ minetest.register_node("loot_chests:bronze_loot_chest", {
     groups = {unbreakable=1},
 
     on_construct = function(pos)
-
-        local meta = minetest.get_meta(pos)
-
-        meta:set_string("formspec",
-
-            "size[8,9]list[current_name;main;0,0;8,4;]" ..
-
-            "list[current_player;main;0,5;8,4;]" ..
-
-            "listring[current_name;main]" ..
-
-            "listring[current_player;main]"
-
-        )
-
-        meta:get_inventory():set_size("main", 32)
-
-        refill_chest(pos)
-
-        local obj = minetest.add_entity(vector.add(pos, {x=0,y=0.1,z=0}), "loot_chests:bronze_label")
-
-        if obj then obj:get_luaentity().chest_pos = pos end
-
-    end,
-
-})
+    local meta = minetest.get_meta(pos)
+    local inv = meta:get_inventory()
+    
+    -- THIS IS THE MISSING PIECE:
+    inv:set_size("main", 8*4) -- Matches the 8x4 grid in your formspec
+    
+    meta:set_string("infotext", "Loot Chest")
+    meta:set_string("formspec",
+        "size[8,9]" ..
+        "list[current_name;main;0,0;8,4;]" ..
+        "list[current_player;main;0,5;8,4;]" ..
+        "listring[current_name;main]" ..   -- Required for Shift-Click
+        "listring[current_player;main]"    -- Required for Shift-Click
+    )
+        end
 
 minetest.register_lbm({
 
