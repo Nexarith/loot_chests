@@ -73,19 +73,21 @@ minetest.register_node("loot_chests:mese_chest", {
     paramtype2 = "facedir", groups = {choppy = 2, oddly_breakable_by_hand = 2},
 
     on_construct = function(pos)
-
-        local meta = minetest.get_meta(pos)
-
-        meta:set_string("formspec", "size[8,9]list[current_name;main;0,0;8,4;]list[current_player;main;0,5;8,4;]listring[current_name;main]listring[current_player;main]")
-
-        meta:set_string("infotext", "Build Chest"); meta:get_inventory():set_size("main", 32); refill_build_chest(pos)
-
-        local obj = minetest.add_entity(vector.add(pos, {x=0,y=0.8,z=0}), "loot_chests:build_label")
-
-        if obj then obj:get_luaentity().chest_pos = pos end
-
-    end,
-
+    local meta = minetest.get_meta(pos)
+    local inv = meta:get_inventory()
+    
+    -- THIS IS THE MISSING PIECE:
+    inv:set_size("main", 8*4) -- Matches the 8x4 grid in your formspec
+    
+    meta:set_string("infotext", "Loot Chest")
+    meta:set_string("formspec",
+        "size[8,9]" ..
+        "list[current_name;main;0,0;8,4;]" ..
+        "list[current_player;main;0,5;8,4;]" ..
+        "listring[current_name;main]" ..   -- Required for Shift-Click
+        "listring[current_player;main]"    -- Required for Shift-Click
+    )
+end,
     after_place_node = function(pos, placer)
 
         if placer and placer:is_player() then
